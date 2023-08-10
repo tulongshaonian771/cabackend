@@ -3,7 +3,7 @@ import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
 
-public class GoogleMapApi {
+public class GeocodingUtility {
     private static final String GOOGLE_MAPS_API_KEY = "AIzaSyDiiIF6bHn6O5JnAk7ZZgQX0lOOLLsmIXY";
 
     public static String getAddressFromCoordinates(double latitude, double longitude) {
