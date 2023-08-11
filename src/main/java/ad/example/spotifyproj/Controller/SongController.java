@@ -69,8 +69,10 @@ public class SongController {
 
                 String artistName = track.get("artists").get(0).get("name").asText();
 
+                String imageUrl = track.get("album").get("images").get(0).get("url").asText();
+
                 int duration = track.get("duration_ms").asInt();
-                SendSong sendSong = new SendSong(trackId, songName, artistName, duration);
+                SendSong sendSong = new SendSong(trackId, songName, artistName, duration,imageUrl);
                 SendSongList.add(sendSong);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -113,7 +115,9 @@ public class SongController {
 
                 int duration = track.get("duration_ms").asInt();
 
-                SendSong sendSong = new SendSong(trackId, songName, artistName, duration);
+                String imageUrl = track.get("album").get("images").get(0).get("url").asText();
+
+                SendSong sendSong = new SendSong(trackId, songName, artistName, duration,imageUrl);
                 SendSongList.add(sendSong);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -146,7 +150,9 @@ public class SongController {
 
                 int duration = track.get("duration_ms").asInt();
 
-                SendSong sendSong = new SendSong(trackId, songName, artistName, duration);
+                String imageUrl = track.get("album").get("images").get(0).get("url").asText();
+
+                SendSong sendSong = new SendSong(trackId, songName, artistName, duration,imageUrl);
                 SendSongList.add(sendSong);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -188,7 +194,9 @@ public class SongController {
 
                 int duration = track.get("duration_ms").asInt();
 
-                SendSong sendSong = new SendSong(trackId, songName, artistName, duration);
+                String imageUrl = track.get("album").get("images").get(0).get("url").asText();
+
+                SendSong sendSong = new SendSong(trackId, songName, artistName, duration,imageUrl);
                 SendSongList.add(sendSong);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -233,13 +241,16 @@ class SendSong{
     private String name;
     private String artist;
     private Integer duration;
+    private String imageUrl;
 
-    public SendSong(String uri, String name, String artistName, Integer duration) {
+    public SendSong(String uri, String name, String artist, Integer duration, String imageUrl) {
         this.uri = uri;
         this.name = name;
-        this.artist = artistName;
+        this.artist = artist;
         this.duration = duration;
+        this.imageUrl = imageUrl;
     }
+
     public String getUri() {
         return uri;
     }
@@ -260,8 +271,8 @@ class SendSong{
         return artist;
     }
 
-    public void setArtist(String artistName) {
-        this.artist = artistName;
+    public void setArtist(String artist) {
+        this.artist = artist;
     }
 
     public Integer getDuration() {
@@ -270,5 +281,13 @@ class SendSong{
 
     public void setDuration(Integer duration) {
         this.duration = duration;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
