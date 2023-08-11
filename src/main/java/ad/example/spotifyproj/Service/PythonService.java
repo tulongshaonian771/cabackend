@@ -31,8 +31,10 @@ public class PythonService {
 
     public List<String> senddatatoPython() {
     String uri = "1BxfuPKGuaTgP7aM0Bbdwr";
+        String uri1 = "5oL7vOxCz2eJKAX6G4Yluh";
     List<String> uriList = new ArrayList<>();
     uriList.add(uri);
+    uriList.add(uri1);
         return uriList;
     }
 }

@@ -8,11 +8,13 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface LocationRepository extends JpaRepository<UserLocation,Integer> {
+public interface LocationRepository extends JpaRepository<UserLocation,Long> {
     
     
     @Query("SELECT l.id from UserLocation l where l.address = :address")
     public int findLocationIdByAddress(@Param("address") String address);
+
+    public UserLocation findByAddress(String address);
 
     // @Query("SELECT COUNT(*) FROM Location l WHERE l.address = :address")
     // public int countSameLocation(@Param("address") String address);

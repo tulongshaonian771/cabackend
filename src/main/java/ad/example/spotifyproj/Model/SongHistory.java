@@ -1,5 +1,7 @@
 package ad.example.spotifyproj.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -20,15 +24,18 @@ public class SongHistory {
 
     private int timeType;  //Moring for 0, Noon for 1, Evening for 2 ...
 
-    private int timeOfPlay;  
+    private LocalDateTime timeOfPlay;
+
 
     @ManyToOne(fetch = FetchType.LAZY) // Many-to-One relationship with UserLocation
     @JoinColumn(name = "location_id") // This is the foreign key column in the SongHistory table
     private UserLocation userLocation;
 
+
     @ManyToOne(fetch = FetchType.LAZY) // Many-to-One relationship with Song
     @JoinColumn(name = "song_id") // This is the foreign key column in the SongHistory table
     private Song song;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id")

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,15 +63,59 @@ public class SongController {
             String responseBody = response.getBody();
             try {
                 JsonNode trackDetails = objectMapper.readTree(responseBody);
-                JsonNode track = trackDetails.get("tracks").get(0); // Assuming there's only one track in the "tracks" array
+                JsonNode track = trackDetails.get("tracks").get(0);
 
-                // 获取歌曲名称
                 String songName = track.get("name").asText();
 
-                // 获取第一个艺术家的名称
                 String artistName = track.get("artists").get(0).get("name").asText();
 
-                // 获取时长（以毫秒为单位）
+                int duration = track.get("duration_ms").asInt();
+                SendSong sendSong = new SendSong(trackId, songName, artistName, duration);
+                SendSongList.add(sendSong);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return ResponseEntity.ok(SendSongList);
+    }
+
+    @PostMapping( "/time")
+    public ResponseEntity<List<SendSong>> generateSongByTime(@RequestBody ReceivedLocation location) {
+        int locationId, timeType, number;
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+        String address = GeocodingUtility.getAddressFromCoordinates(latitude, longitude);
+        User user = userService.findUserByUsername(location.getUsername());
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        timeType = RecordController.getTimeType(currentDateTime);
+        long userId = user.getId();
+
+//        if(userService.isUserPremium(userId)){
+//            //get locationId from database
+//             locationId = locationService.findLocationIdByAddress(address);
+        locationId = -1;
+        number = 24;
+//        }
+//        else{
+//            locationId = locationService.findLocationIdByAddress(address);
+//              locationId = -1;
+//        number = 24;
+//        }
+        //this will catch data from python
+
+        List<String> playlist = pythonService.senddatatoPython();
+        List<SendSong> SendSongList = new ArrayList<>();
+        for (String trackId : playlist) {
+            ResponseEntity<String> response = spotifyService.getTrackDetails(trackId);
+            String responseBody = response.getBody();
+            try {
+                JsonNode trackDetails = objectMapper.readTree(responseBody);
+                JsonNode track = trackDetails.get("tracks").get(0);
+
+                String songName = track.get("name").asText();
+
+                String artistName = track.get("artists").get(0).get("name").asText();
+
                 int duration = track.get("duration_ms").asInt();
 
                 SendSong sendSong = new SendSong(trackId, songName, artistName, duration);

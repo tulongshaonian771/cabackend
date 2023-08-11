@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface SongRepository extends JpaRepository<Song,Long> {
     public List<Song> findByHoliday(String holiday);
+    public  Song findByUri(String uri);
 }

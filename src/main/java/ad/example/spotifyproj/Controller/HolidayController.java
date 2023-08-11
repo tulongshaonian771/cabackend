@@ -26,12 +26,12 @@ public class HolidayController {
     @GetMapping
     public ResponseEntity<List<Song>> getSongOfHoliday() {
         LocalDate currentDate = LocalDate.now();
-        if (isFestival(currentDate, 8, 10)) {
+        if (isFestival(currentDate, 8, 9)) {
             // Singapore National Day
             List<Song> songList = holidayService.getSongForHoliday("Singapore National Day");
             return new ResponseEntity<>(songList, HttpStatus.OK);
         }
-        else if (isFestival(currentDate, 1, 1)) {
+        else if (isFestival(currentDate, 8, 11)) {
             // new year
             List<Song> songList = holidayService.getSongForHoliday("New Year's Day");
             return new ResponseEntity<>(songList, HttpStatus.OK);
