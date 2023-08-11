@@ -82,9 +82,6 @@ public class SongController {
     @PostMapping( "/time")
     public ResponseEntity<List<SendSong>> generateSongByTime(@RequestBody ReceivedLocation location) {
         int locationId, timeType, number;
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        String address = GeocodingUtility.getAddressFromCoordinates(latitude, longitude);
         User user = userService.findUserByUsername(location.getUsername());
         LocalDateTime currentDateTime = LocalDateTime.now();
         timeType = RecordController.getTimeType(currentDateTime);
@@ -128,9 +125,6 @@ public class SongController {
     @PostMapping( "/public")
     public ResponseEntity<List<SendSong>> generatePublicSong(@RequestBody ReceivedLocation location) {
         int locationId, timeType, number;
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        String address = GeocodingUtility.getAddressFromCoordinates(latitude, longitude);
         long userId = 0;
             locationId = -1;
             timeType = -1;
@@ -164,11 +158,7 @@ public class SongController {
     @PostMapping( "/after")
     public ResponseEntity<List<SendSong>> generateSongAfterLogin(@RequestBody ReceivedLocation location) {
         int locationId, timeType, number;
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        String address = GeocodingUtility.getAddressFromCoordinates(latitude, longitude);
         User user = userService.findUserByUsername(location.getUsername());
-        LocalDateTime currentDateTime = LocalDateTime.now();
         long userId = user.getId();
 
         if(userService.isUserPremium(userId)){
