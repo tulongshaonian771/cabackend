@@ -6,10 +6,6 @@ import ad.example.spotifyproj.Model.Song;
 import ad.example.spotifyproj.Repository.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import ad.example.spotifyproj.Model.Holiday;
-
 
 
 @Service

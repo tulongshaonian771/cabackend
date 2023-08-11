@@ -8,10 +8,6 @@ import org.springframework.stereotype.Service;
 public class LocationService {
 @Autowired
     private LocationRepository locationRepository;
-
- 
-
-
     public void saveLocation( UserLocation location){
         if (!locationRepository.existsByAddress(location.getAddress()))
         {

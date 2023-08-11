@@ -49,7 +49,6 @@ class LoginForm {
     public void setPassword(String password) {
         this.password = password;
     }
-// Getters and setters
 }
 
 

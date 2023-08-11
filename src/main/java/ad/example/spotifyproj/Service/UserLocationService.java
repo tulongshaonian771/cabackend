@@ -14,9 +14,6 @@ import ad.example.spotifyproj.Repository.UserLocationRepo;
 public class UserLocationService {
     @Autowired
     private UserLocationRepo currentLocationRepository;
-
- 
-
     public void savecurrentlocation( UserLocation currentLocation){
         currentLocationRepository.save(currentLocation);
         
