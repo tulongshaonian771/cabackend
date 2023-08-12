@@ -36,7 +36,8 @@ public class SongController {
     @PostMapping( "/location")
     public ResponseEntity<List<SendSong>> generateSongByLocation(@RequestBody ReceivedLocation location) {
        
-        int locationId, timeType, number;
+        int timeType, number;
+        Integer locationId;
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         String address = GeocodingUtility.getAddressFromCoordinates(latitude, longitude);
@@ -46,11 +47,19 @@ public class SongController {
         if(userService.isUserPremium(userId)){
             //get locationId from database
              locationId = locationService.findLocationIdByAddress(address);
+             if(locationId == null)
+             {
+                 locationId = -1;
+             }
              timeType = -1;
              number = 12;
         }
         else{
             locationId = locationService.findLocationIdByAddress(address);
+            if(locationId == null)
+            {
+                locationId = -1;
+            }
              timeType = -1;
              number = 6;
         }
