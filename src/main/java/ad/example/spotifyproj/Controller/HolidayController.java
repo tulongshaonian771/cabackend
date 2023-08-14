@@ -33,27 +33,27 @@ public class HolidayController {
     @GetMapping
     public ResponseEntity<List<Song>> getSongOfHoliday() {
         LocalDate currentDate = LocalDate.now();
-        if (isFestival(currentDate, 8, 9)) {
+        if (isFestival(currentDate, 7, 2, 9, 1)) {
             // Singapore National Day
             List<Song> songList = holidayService.getSongForHoliday("Singapore National Day");
             return new ResponseEntity<>(songList, HttpStatus.OK);
-        } else if (isFestival(currentDate, 8, 11)) {
+        } else if (isFestival(currentDate, 12, 31, 1, 20)) {
             // new year
             List<Song> songList = holidayService.getSongForHoliday("New Year's Day");
             return new ResponseEntity<>(songList, HttpStatus.OK);
-        } else if (isFestival(currentDate, 1, 21, 2, 20)) {
+        } else if (isFestival(currentDate, 1, 21, 3, 1)) {
             // Chinese New Year
             List<Song> songList = holidayService.getSongForHoliday("Chinese New Year");
             return new ResponseEntity<>(songList, HttpStatus.OK);
-        } else if (isFestival(currentDate, 8, 8)) {
+        } else if (isFestival(currentDate, 8, 12)) {
             // Christmas Day
             List<Song> songList = holidayService.getSongForHoliday("Christmas Day");
             return new ResponseEntity<>(songList, HttpStatus.OK);
-        } else if (isFestival(currentDate, 4, 22)) {
+        } else if (isFestival(currentDate, 12, 13, 12, 30)) {
             // Hari Raya Puasa
             List<Song> songList = holidayService.getSongForHoliday("Hari Raya Puasa");
             return new ResponseEntity<>(songList, HttpStatus.OK);
-        } else if (isFestival(currentDate, 12, 12)) {
+        } else if (isFestival(currentDate, 9, 2, 12, 12)) {
             // Deepavali
             List<Song> songList = holidayService.getSongForHoliday("Deepavali");
             return new ResponseEntity<>(songList, HttpStatus.OK);
@@ -105,12 +105,6 @@ public class HolidayController {
         LocalDate startDate = LocalDate.of(currentDate.getYear(), startMonth, startDay);
         LocalDate endDate = LocalDate.of(currentDate.getYear(), endMonth, endDay);
         return currentDate.isAfter(startDate) && currentDate.isBefore(endDate.plusDays(1));
-    }
-
-    // Determine if the date falls on a specified holiday
-    private static boolean isFestival(LocalDate currentDate, int month, int day) {
-        LocalDate festivalDate = LocalDate.of(currentDate.getYear(), month, day);
-        return currentDate.equals(festivalDate);
     }
 
     private List<SendSong> getSendSong(List<Song> songList) {
