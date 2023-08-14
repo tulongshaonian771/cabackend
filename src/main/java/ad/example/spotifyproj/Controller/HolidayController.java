@@ -107,6 +107,12 @@ public class HolidayController {
         return currentDate.isAfter(startDate) && currentDate.isBefore(endDate.plusDays(1));
     }
 
+    // Determine if the date falls on a specified holiday
+    private static boolean isFestival(LocalDate currentDate, int month, int day) {
+        LocalDate festivalDate = LocalDate.of(currentDate.getYear(), month, day);
+        return currentDate.equals(festivalDate);
+    }
+
     private List<SendSong> getSendSong(List<Song> songList) {
         List<SendSong> SendSongList = new ArrayList<>();
         for (Song song : songList) {
