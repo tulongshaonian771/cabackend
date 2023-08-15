@@ -35,7 +35,7 @@ public class SongController {
 
     @PostMapping( "/location")
     public ResponseEntity<List<SendSong>> generateSongByLocation(@RequestBody ReceivedLocation location) {
-       
+
         int timeType, number;
         Integer locationId;
         double latitude = location.getLatitude();
@@ -43,25 +43,21 @@ public class SongController {
         String address = GeocodingUtility.getAddressFromCoordinates(latitude, longitude);
         User user = userService.findUserByUsername(location.getUsername());
         long userId = user.getId();
-
-        if(userService.isUserPremium(userId)){
-            //get locationId from database
-             locationId = locationService.findLocationIdByAddress(address);
-             if(locationId == null)
-             {
-                 locationId = -1;
-             }
-             timeType = -1;
-             number = 12;
-        }
+        locationId = locationService.findLocationIdByAddress(address);
+        if (userService.isUserPremium(userId)){
+            if(locationId == null) {
+                locationId = -1;
+            }
+            timeType = -1;
+            number = 12;
+            }
         else{
-            locationId = locationService.findLocationIdByAddress(address);
             if(locationId == null)
             {
                 locationId = -1;
             }
-             timeType = -1;
-             number = 6;
+            timeType = -1;
+            number = 6;
         }
         //this will catch data from python 
        
@@ -142,6 +138,41 @@ public class SongController {
             locationId = -1;
             timeType = -1;
             number = 6;
+        //this will catch data from python
+
+        List<String> playlist = pythonService.senddatatoPython();
+        List<SendSong> SendSongList = new ArrayList<>();
+        for (String trackId : playlist) {
+            ResponseEntity<String> response = spotifyService.getTrackDetails(trackId);
+            String responseBody = response.getBody();
+            try {
+                JsonNode trackDetails = objectMapper.readTree(responseBody);
+                JsonNode track = trackDetails.get("tracks").get(0);
+
+                String songName = track.get("name").asText();
+
+                String artistName = track.get("artists").get(0).get("name").asText();
+
+                int duration = track.get("duration_ms").asInt();
+
+                String imageUrl = track.get("album").get("images").get(0).get("url").asText();
+
+                SendSong sendSong = new SendSong(trackId, songName, artistName, duration,imageUrl);
+                SendSongList.add(sendSong);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return ResponseEntity.ok(SendSongList);
+    }
+
+    @PostMapping( "/publicForAndroid")
+    public ResponseEntity<List<SendSong>> generatePublicSongForAndroid() {
+        int locationId, timeType, number;
+        long userId = 0;
+        locationId = -1;
+        timeType = -1;
+        number = 18;
         //this will catch data from python
 
         List<String> playlist = pythonService.senddatatoPython();
