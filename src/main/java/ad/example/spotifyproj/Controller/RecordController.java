@@ -21,13 +21,13 @@ public class RecordController {
     private final UserService userService;
 
     private final RecordService recordService;
-
+    @Autowired
     public RecordController(UserService userService, RecordService recordService) {
         this.userService = userService;
         this.recordService = recordService;
     }
 
-    @Autowired
+
     public static int getTimeType(LocalDateTime dateTime) {
         LocalTime time = dateTime.toLocalTime();
 

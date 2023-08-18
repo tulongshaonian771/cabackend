@@ -2,10 +2,7 @@ package ad.example.spotifyproj.Controller;
 
 
 import ad.example.spotifyproj.Model.User;
-import ad.example.spotifyproj.Service.LocationService;
-import ad.example.spotifyproj.Service.PythonService;
-import ad.example.spotifyproj.Service.SpotifyService;
-import ad.example.spotifyproj.Service.UserService;
+import ad.example.spotifyproj.Service.*;
 import ad.example.spotifyproj.Utility.GeocodingUtility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 @RestController
 @RequestMapping
@@ -31,142 +29,64 @@ public class SongController {
     private LocationService locationService;
     @Autowired
     private SpotifyService spotifyService;
+    @Autowired
+    private SongHistoryService songHistoryService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @PostMapping( "/location")
+    @PostMapping("/location")
     public ResponseEntity<List<SendSong>> generateSongByLocation(@RequestBody ReceivedLocation location) {
 
         int timeType, number;
-        Integer locationId;
+        int locationId = -1;
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         String address = GeocodingUtility.getAddressFromCoordinates(latitude, longitude);
         User user = userService.findUserByUsername(location.getUsername());
         long userId = user.getId();
-        locationId = locationService.findLocationIdByAddress(address);
-        if (userService.isUserPremium(userId)){
-            if(locationId == null) {
-                locationId = -1;
-            }
-            timeType = -1;
+        try {
+            locationId = Math.toIntExact(locationService.findLocationIdByAddress(address));
+        } catch (Exception ignore) {
+        }
+        timeType = -1;
+        if (userService.isUserPremium(userId)) {
             number = 12;
-            }
-        else{
-            if(locationId == null)
-            {
-                locationId = -1;
-            }
-            timeType = -1;
+        } else {
             number = 6;
         }
         //this will catch data from python 
-       
-        List<String> playlist = pythonService.senddatatoPython();
-        List<SendSong> SendSongList = new ArrayList<>();
-        for (String trackId : playlist) {
-            ResponseEntity<String> response = spotifyService.getTrackDetails(trackId);
-            String responseBody = response.getBody();
-            try {
-                JsonNode trackDetails = objectMapper.readTree(responseBody);
-                JsonNode track = trackDetails.get("tracks").get(0);
 
-                String songName = track.get("name").asText();
-
-                String artistName = track.get("artists").get(0).get("name").asText();
-
-                String imageUrl = track.get("album").get("images").get(0).get("url").asText();
-
-                int duration = track.get("duration_ms").asInt();
-                SendSong sendSong = new SendSong(trackId, songName, artistName, duration,imageUrl);
-                SendSongList.add(sendSong);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return ResponseEntity.ok(SendSongList);
+        List<String> playlist = pythonService.senddatatoPython(userId, locationId, timeType, number);
+        return getDataFromSpotify(playlist);
     }
 
-    @PostMapping( "/time")
+    @PostMapping("/time")
     public ResponseEntity<List<SendSong>> generateSongByTime(@RequestBody ReceivedLocation location) {
         int locationId, timeType, number;
         User user = userService.findUserByUsername(location.getUsername());
         LocalDateTime currentDateTime = LocalDateTime.now();
         timeType = RecordController.getTimeType(currentDateTime);
         long userId = user.getId();
-
-        if(userService.isUserPremium(userId)){
-            //get locationId from database
         locationId = -1;
-        number = 12;
-        }
-        else{
-              locationId = -1;
-        number = 6;
-        }
-        //this will catch data from python
-
-        List<String> playlist = pythonService.senddatatoPython();
-        List<SendSong> SendSongList = new ArrayList<>();
-        for (String trackId : playlist) {
-            ResponseEntity<String> response = spotifyService.getTrackDetails(trackId);
-            String responseBody = response.getBody();
-            try {
-                JsonNode trackDetails = objectMapper.readTree(responseBody);
-                JsonNode track = trackDetails.get("tracks").get(0);
-
-                String songName = track.get("name").asText();
-
-                String artistName = track.get("artists").get(0).get("name").asText();
-
-                int duration = track.get("duration_ms").asInt();
-
-                String imageUrl = track.get("album").get("images").get(0).get("url").asText();
-
-                SendSong sendSong = new SendSong(trackId, songName, artistName, duration,imageUrl);
-                SendSongList.add(sendSong);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return ResponseEntity.ok(SendSongList);
-    }
-
-    @PostMapping( "/public")
-    public ResponseEntity<List<SendSong>> generatePublicSong(@RequestBody ReceivedLocation location) {
-        int locationId, timeType, number;
-        long userId = 0;
-            locationId = -1;
-            timeType = -1;
+        if (userService.isUserPremium(userId)) {
+            //get locationId from database
+            number = 12;
+        } else {
             number = 6;
+        }
         //this will catch data from python
 
-        List<String> playlist = pythonService.senddatatoPython();
-        List<SendSong> SendSongList = new ArrayList<>();
-        for (String trackId : playlist) {
-            ResponseEntity<String> response = spotifyService.getTrackDetails(trackId);
-            String responseBody = response.getBody();
-            try {
-                JsonNode trackDetails = objectMapper.readTree(responseBody);
-                JsonNode track = trackDetails.get("tracks").get(0);
-
-                String songName = track.get("name").asText();
-
-                String artistName = track.get("artists").get(0).get("name").asText();
-
-                int duration = track.get("duration_ms").asInt();
-
-                String imageUrl = track.get("album").get("images").get(0).get("url").asText();
-
-                SendSong sendSong = new SendSong(trackId, songName, artistName, duration,imageUrl);
-                SendSongList.add(sendSong);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return ResponseEntity.ok(SendSongList);
+        List<String> playlist = pythonService.senddatatoPython(userId, locationId, timeType, number);
+        return getDataFromSpotify(playlist);
     }
 
-    @PostMapping( "/publicForAndroid")
+    @PostMapping("/public")
+    public ResponseEntity<List<SendSong>> generatePublicSong(@RequestBody ReceivedLocation location) {
+        //this will catch data from python
+        List<String> playlist = pythonService.senddatatoPython(0, -1, -1, 6);
+        return getDataFromSpotify(playlist);
+    }
+
+    @GetMapping("/publicForAndroid")
     public ResponseEntity<List<SendSong>> generatePublicSongForAndroid() {
         int locationId, timeType, number;
         long userId = 0;
@@ -175,78 +95,65 @@ public class SongController {
         number = 18;
         //this will catch data from python
 
-        List<String> playlist = pythonService.senddatatoPython();
-        List<SendSong> SendSongList = new ArrayList<>();
-        for (String trackId : playlist) {
-            ResponseEntity<String> response = spotifyService.getTrackDetails(trackId);
-            String responseBody = response.getBody();
-            try {
-                JsonNode trackDetails = objectMapper.readTree(responseBody);
-                JsonNode track = trackDetails.get("tracks").get(0);
-
-                String songName = track.get("name").asText();
-
-                String artistName = track.get("artists").get(0).get("name").asText();
-
-                int duration = track.get("duration_ms").asInt();
-
-                String imageUrl = track.get("album").get("images").get(0).get("url").asText();
-
-                SendSong sendSong = new SendSong(trackId, songName, artistName, duration,imageUrl);
-                SendSongList.add(sendSong);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return ResponseEntity.ok(SendSongList);
+        List<String> playlist = pythonService.senddatatoPython(userId, locationId, timeType, number);
+        return getDataFromSpotify(playlist);
     }
 
-    @PostMapping( "/after")
+    @PostMapping("/after")
     public ResponseEntity<List<SendSong>> generateSongAfterLogin(@RequestBody ReceivedLocation location) {
         int locationId, timeType, number;
         User user = userService.findUserByUsername(location.getUsername());
         long userId = user.getId();
-
-        if(userService.isUserPremium(userId)){
-            timeType = -1;
-            locationId = -1;
+        timeType = -1;
+        locationId = -1;
+        if (userService.isUserPremium(userId)) {
             number = 12;
-        }
-        else{
-            timeType = -1;
-            locationId = -1;
+        } else {
             number = 6;
         }
         //this will catch data from python
 
-        List<String> playlist = pythonService.senddatatoPython();
+        List<String> playlist = pythonService.senddatatoPython(userId, locationId, timeType, number);
+
+        return getDataFromSpotify(playlist);
+    }
+
+    @PostMapping("/history")
+    public ResponseEntity<List<SendSong>> generateHistory(@RequestBody ReceivedLocation location) {
+        User user = userService.findUserByUsername(location.getUsername());
+        List<String> playlist = songHistoryService.getAllSongURIs(user);
+        return getDataFromSpotify(playlist);
+    }
+
+    public ResponseEntity<List<SendSong>> getDataFromSpotify(List<String> playlist) {
         List<SendSong> SendSongList = new ArrayList<>();
+        StringBuilder tracks = new StringBuilder();
         for (String trackId : playlist) {
-            ResponseEntity<String> response = spotifyService.getTrackDetails(trackId);
+            tracks.append(",").append(trackId);
+        }
+        tracks = new StringBuilder(tracks.substring(1));
+        try {
+            ResponseEntity<String> response = spotifyService.getTrackDetails(tracks.toString());
             String responseBody = response.getBody();
-            try {
-                JsonNode trackDetails = objectMapper.readTree(responseBody);
-                JsonNode track = trackDetails.get("tracks").get(0);
-
+            JsonNode trackDetails = objectMapper.readTree(responseBody).get("tracks");
+            for (int i = 0; i < trackDetails.size(); i++) {
+                JsonNode track = trackDetails.get(i);
+                String trackId = playlist.get(i);
                 String songName = track.get("name").asText();
-
                 String artistName = track.get("artists").get(0).get("name").asText();
-
                 int duration = track.get("duration_ms").asInt();
-
                 String imageUrl = track.get("album").get("images").get(0).get("url").asText();
-
-                SendSong sendSong = new SendSong(trackId, songName, artistName, duration,imageUrl);
+                SendSong sendSong = new SendSong(trackId, songName, artistName, duration, imageUrl);
                 SendSongList.add(sendSong);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return ResponseEntity.ok(SendSongList);
     }
 }
-    
-class ReceivedLocation{
+
+class ReceivedLocation {
     private double latitude;
     private double longitude;
     private String username;
@@ -276,7 +183,7 @@ class ReceivedLocation{
     }
 }
 
-class SendSong{
+class SendSong {
     private String uri;
     private String name;
     private String artist;

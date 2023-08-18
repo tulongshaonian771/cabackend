@@ -15,9 +15,9 @@ public class PythonService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public List<String> senddatatoPython(long userId, int locationId, int timeType, int number) {
-        String url = "http://localhost:5000/model1?userid=" + userId + "&locationid=" +
-                locationId + "&timetype=" + timeType + "&number=" + number;
+    public List<String> senddatatoPython(long userId, long locationId, int timeType, int number) {
+        String url = "http://localhost:5000/recommend?user_id=" + userId + "&location=" +
+                locationId + "&timetype=" + timeType + "&num=" + number;
         ResponseEntity<List> response = restTemplate.getForEntity(url, List.class);
 
         // Check response status code and body if necessary

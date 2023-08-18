@@ -65,12 +65,12 @@ public class HolidayController {
     @GetMapping("/android")
     public ResponseEntity<List<SendSong>> getSongOfHolidayForAndroid() {
         LocalDate currentDate = LocalDate.now();
-        if (isFestival(currentDate, 8, 9)) {
+        if (isFestival(currentDate, 7, 2, 9, 1)) {
             // Singapore National Day
             List<Song> songList = holidayService.getSongForHoliday("Singapore National Day");
             List<SendSong> sendSongList = getSendSong(songList);
             return new ResponseEntity<>(sendSongList, HttpStatus.OK);
-        } else if (isFestival(currentDate, 8, 11)) {
+        } else if (isFestival(currentDate, 12, 31, 1, 20)) {
             // new year
             List<Song> songList = holidayService.getSongForHoliday("New Year's Day");
             List<SendSong> sendSongList = getSendSong(songList);
@@ -80,17 +80,17 @@ public class HolidayController {
             List<Song> songList = holidayService.getSongForHoliday("Chinese New Year");
             List<SendSong> sendSongList = getSendSong(songList);
             return new ResponseEntity<>(sendSongList, HttpStatus.OK);
-        } else if (isFestival(currentDate, 8, 8)) {
+        } else if (isFestival(currentDate, 8, 12)) {
             // Christmas Day
             List<Song> songList = holidayService.getSongForHoliday("Christmas Day");
             List<SendSong> sendSongList = getSendSong(songList);
             return new ResponseEntity<>(sendSongList, HttpStatus.OK);
-        } else if (isFestival(currentDate, 4, 22)) {
+        } else if (isFestival(currentDate, 12, 13, 12, 30)){
             // Hari Raya Puasa
             List<Song> songList = holidayService.getSongForHoliday("Hari Raya Puasa");
             List<SendSong> sendSongList = getSendSong(songList);
             return new ResponseEntity<>(sendSongList, HttpStatus.OK);
-        } else if (isFestival(currentDate, 12, 12)) {
+        }  else if (isFestival(currentDate, 9, 2, 12, 12)){
             // Deepavali
             List<Song> songList = holidayService.getSongForHoliday("Deepavali");
             List<SendSong> sendSongList = getSendSong(songList);
