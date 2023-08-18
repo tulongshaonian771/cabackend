@@ -1,6 +1,5 @@
 package ad.example.spotifyproj.config;
-import ad.example.spotifyproj.Service.SpotifyApiService;
-import ad.example.spotifyproj.Service.SpotifyService;
+import ad.example.spotifyproj.service.SpotifyApiService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
