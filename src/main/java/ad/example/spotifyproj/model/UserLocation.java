@@ -21,19 +21,10 @@ public class UserLocation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private double latitude;
-
     private double longitude;
-
     private String address;
-
-
     @OneToMany(mappedBy = "userLocation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SongHistory> songHistoryList = new ArrayList<>();
-
-   
-    // Constructors, getters, setters, and other methods go here.
-
-    // Helper method to manage bidirectional relationship with SongHistory
     public void addSongHistory(SongHistory songHistory) {
         songHistoryList.add(songHistory);
         songHistory.setUserLocation(this);
