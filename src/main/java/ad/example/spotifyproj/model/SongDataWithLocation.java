@@ -1,7 +1,4 @@
 package ad.example.spotifyproj.model;
-
-import ad.example.spotifyproj.controller.RecordController;
-
 public class SongDataWithLocation {
     private String songURI;
     private LocationData location;

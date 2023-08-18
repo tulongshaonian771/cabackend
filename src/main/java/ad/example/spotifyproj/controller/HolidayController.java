@@ -16,7 +16,6 @@ import ad.example.spotifyproj.service.HolidayService;
 
 @RestController
 @RequestMapping("/holidays")
-@CrossOrigin(origins = "http://localhost:3000")
 public class HolidayController {
     private final HolidayService holidayService;
     private final SpotifyService spotifyService;

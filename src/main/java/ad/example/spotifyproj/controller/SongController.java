@@ -18,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping
-@CrossOrigin(origins = "http://localhost:3000")
 public class SongController {
     private final PythonService pythonService;
     private final UserService userService;

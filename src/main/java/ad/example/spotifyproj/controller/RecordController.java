@@ -12,7 +12,6 @@ import java.time.LocalTime;
 import  ad.example.spotifyproj.model.LocationData;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/record")
 public class RecordController {
     private final UserService userService;
